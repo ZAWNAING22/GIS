@@ -1,51 +1,84 @@
-To understand your GIS + ML project, you mainly need to understand **2 major GIS data types**:
+# GIS + Machine Learning Project Notes (Organized Guide)
 
-1. **Vector data** → points, lines, polygons
-2. **Raster data** → grid/pixel images
+# 1. Introduction to GIS Data
 
-Everything in your project is built from these.
+GIS mainly works with **two major data types**:
 
----
+| Data Type   | Description         | Example                             |
+| ----------- | ------------------- | ----------------------------------- |
+| Vector Data | Discrete objects    | Roads, buildings, points            |
+| Raster Data | Continuous surfaces | Satellite images, NDVI, temperature |
 
-# 1. VECTOR DATA (Shapefile)
-
-A **Shapefile (.shp)** is the most common GIS vector format.
-
-It stores:
-
-* points
-* lines
-* polygons
-
-Example in your project:
-
-| Data                | Type              |
-| ------------------- | ----------------- |
-| Urban sample points | Point shapefile   |
-| Non-urban points    | Point shapefile   |
-| Roads               | Line shapefile    |
-| Study area boundary | Polygon shapefile |
+Everything in a GIS + ML project is built from these two concepts.
 
 ---
 
-# WHAT YOU MUST KNOW ABOUT SHAPEFILES
+# 2. Vector Data
 
-A shapefile is NOT one file.
+Vector data represents real-world objects using geometry.
 
-It is several files together:
+## Geometry Types
+
+### A. Point
+
+A single coordinate location.
+
+Example:
+
+* Urban sample point
+* Weather station
+* Fire incident location
+
+```text
+(x, y)
+```
+
+---
+
+### B. Line
+
+Connected points forming a path.
+
+Example:
+
+* Roads
+* Rivers
+* Power lines
+
+---
+
+### C. Polygon
+
+Closed area representing boundaries.
+
+Example:
+
+* City boundary
+* Forest area
+* Study area (AOI)
+
+---
+
+# 3. Shapefile (.shp)
+
+The most common GIS vector format is the **Shapefile**.
+
+A shapefile is NOT a single file.
+
+It is a group of files that must stay together.
+
+---
+
+## Essential Shapefile Components
 
 | File   | Purpose           |
 | ------ | ----------------- |
-| `.shp` | geometry          |
-| `.shx` | shape index       |
-| `.dbf` | attribute table   |
-| `.prj` | coordinate system |
+| `.shp` | Stores geometry   |
+| `.shx` | Geometry index    |
+| `.dbf` | Attribute table   |
+| `.prj` | Coordinate system |
 
-You must keep them together in same folder.
-
----
-
-# Example
+Example:
 
 ```text
 UrbanPoints.shp
@@ -54,52 +87,24 @@ UrbanPoints.dbf
 UrbanPoints.prj
 ```
 
-If you delete `.dbf` or `.shx`, the shapefile may break.
+If `.dbf` or `.shx` is missing, the shapefile may fail.
 
 ---
 
-# GEOMETRY TYPES
+## Supporting Shapefile Files
 
-## A. Point
-
-Single coordinate.
-
-Example:
-
-* urban sample point
-* weather station
-
-```text
-(x,y)
-```
+| File        | Purpose                     |
+| ----------- | --------------------------- |
+| `.cpg`      | Text encoding               |
+| `.qpj`      | Alternative projection info |
+| `.sbn/.sbx` | Spatial indexing            |
+| `.xml`      | Metadata                    |
 
 ---
 
-## B. Line
+# 4. Attribute Table
 
-Connected points.
-
-Example:
-
-* roads
-* rivers
-
----
-
-## C. Polygon
-
-Closed shape/area.
-
-Example:
-
-* city boundary
-* forest area
-
----
-
-# ATTRIBUTE TABLE
-
-Every shapefile has a table.
+Every shapefile has an attribute table.
 
 Example:
 
@@ -108,39 +113,35 @@ Example:
 | 1  | Urban    |
 | 2  | NonUrban |
 
-For your project:
+For ML projects:
 
 | Label | Meaning   |
 | ----- | --------- |
 | 1     | Urban     |
 | 0     | Non-Urban |
 
-This is VERY important for ML training.
+This label column becomes the target variable for Machine Learning.
 
 ---
 
-# 2. RASTER DATA
+# 5. Raster Data
 
-Raster = image made of pixels.
+Raster data is made of pixels arranged in a grid.
 
 Each pixel stores a value.
 
-Satellite images are rasters.
+Examples:
 
-Example:
-
-| Raster      | Pixel Meaning  |
-| ----------- | -------------- |
-| NDVI        | vegetation     |
-| Elevation   | height         |
-| Temperature | °C             |
-| NDBI        | built-up index |
+* Satellite imagery
+* NDVI
+* Elevation
+* Temperature
 
 ---
 
-# HOW RASTER WORKS
+# 6. Raster Structure
 
-Raster is like Excel grid.
+Raster behaves like a matrix or Excel grid.
 
 Example:
 
@@ -150,176 +151,189 @@ Example:
 25 30 31
 ```
 
-Each cell = pixel value.
+Each cell = one pixel value.
 
 ---
 
-# IMPORTANT RASTER CONCEPTS
+# 7. Important Raster Concepts
 
-## Resolution
+## A. Resolution
 
-Pixel size.
+Resolution = pixel size on the ground.
+
+| Resolution | Meaning                  |
+| ---------- | ------------------------ |
+| 10m        | 1 pixel = 10 × 10 meters |
+| 30m        | 1 pixel = 30 × 30 meters |
 
 Example:
 
-| Resolution | Meaning                |
-| ---------- | ---------------------- |
-| 10m        | one pixel = 10m ground |
-| 30m        | one pixel = 30m ground |
+* Sentinel-2 → 10m resolution
+* Landsat → 30m resolution
 
-Sentinel-2:
-
-* 10m resolution
-
-Meaning:
-
-* each pixel covers 10×10 meters.
+Higher resolution = more detail.
 
 ---
 
-## Bands
+## B. Bands
 
-Satellite images contain multiple bands.
+Satellite images contain multiple spectral bands.
 
-Example:
-
-| Band  | Meaning            |
-| ----- | ------------------ |
-| Red   | visible red        |
-| Green | visible green      |
-| Blue  | visible blue       |
-| NIR   | near infrared      |
-| SWIR  | shortwave infrared |
+| Band  | Meaning             |
+| ----- | ------------------- |
+| Blue  | Visible blue light  |
+| Green | Visible green light |
+| Red   | Visible red light   |
+| NIR   | Near Infrared       |
+| SWIR  | Shortwave Infrared  |
 
 ---
 
-# RGB IMAGE
+# 8. RGB Images
 
-Normal image uses:
+Normal color images use:
 
 * Red
 * Green
 * Blue
 
-In GEE:
+In Google Earth Engine:
 
 ```javascript
 bands: ['B4','B3','B2']
 ```
 
+| Band | Color |
+| ---- | ----- |
+| B4   | Red   |
+| B3   | Green |
+| B2   | Blue  |
+
 ---
 
-# NDVI
+# 9. NDVI (Vegetation Index)
 
-Vegetation index.
-
-Uses:
-
-* NIR
-* Red
+NDVI measures vegetation health.
 
 Formula:
 
 NDVI=\frac{NIR-Red}{NIR+Red}
 
-Meaning:
+---
 
-| Value | Interpretation |
-| ----- | -------------- |
-| high  | vegetation     |
-| low   | urban/bare     |
+## NDVI Interpretation
+
+| NDVI Value | Meaning               |
+| ---------- | --------------------- |
+| High       | Dense vegetation      |
+| Medium     | Sparse vegetation     |
+| Low        | Urban/bare soil/water |
 
 ---
 
-# NDBI
+# 10. NDBI (Built-Up Index)
 
-Urban/building index.
+NDBI identifies urban/built-up areas.
 
 NDBI=\frac{SWIR-NIR}{SWIR+NIR}
 
-Meaning:
+---
 
-| Value | Interpretation |
-| ----- | -------------- |
-| high  | urban          |
-| low   | vegetation     |
+## NDBI Interpretation
+
+| NDBI Value | Meaning         |
+| ---------- | --------------- |
+| High       | Urban/buildings |
+| Low        | Vegetation      |
 
 ---
 
-# MOST IMPORTANT THING IN YOUR PROJECT
+# 11. Other Important Raster Layers
 
-You will:
+## DEM (Digital Elevation Model)
 
-## STEP 1
-
-Create POINT shapefile:
-
-```text
-samplepoints.shp
-```
-
-with labels:
-
-| Point    | Label |
-| -------- | ----- |
-| Urban    | 1     |
-| NonUrban | 0     |
-
----
-
-## STEP 2
-
-Prepare raster layers:
-
-* NDVI raster
-* NDBI raster
-* Elevation raster
-* Slope raster
-
----
-
-## STEP 3
-
-Extract raster values INTO points.
+Stores terrain elevation.
 
 Example:
 
-| Point | NDVI | Elevation | NDBI | Label |
-| ----- | ---- | --------- | ---- | ----- |
-| P1    | 0.2  | 350       | 0.6  | 1     |
-| P2    | 0.8  | 500       | -0.3 | 0     |
-
-THIS becomes your ML dataset.
+* Mountain height
+* Valley depth
 
 ---
 
-# MOST COMMON GIS FILE FORMATS
+## Slope
 
-## VECTOR FORMATS
+Derived from DEM.
 
-| Format     | Use          |
-| ---------- | ------------ |
-| `.shp`     | shapefile    |
-| `.geojson` | web GIS      |
-| `.kml`     | Google Earth |
+Represents terrain steepness.
 
----
+Useful in:
 
-## RASTER FORMATS
-
-| Format           | Use              |
-| ---------------- | ---------------- |
-| `.tif` / `.tiff` | GeoTIFF raster   |
-| `.img`           | raster           |
-| `.jp2`           | Sentinel imagery |
+* Wildfire analysis
+* Flood modeling
+* Urban planning
 
 ---
 
-# GEOREFERENCING
+## Aspect
 
-GIS data knows real-world location.
+Direction terrain faces.
 
-Every file has coordinates.
+Example:
+
+* North-facing slope
+* South-facing slope
+
+Important in environmental analysis.
+
+---
+
+# 12. Coordinate Systems (CRS)
+
+GIS data must know its real-world location.
+
+Without coordinates:
+
+* maps cannot align properly.
+
+---
+
+## Common Coordinate Systems
+
+| System     | Example            |
+| ---------- | ------------------ |
+| Geographic | Latitude/Longitude |
+| Projected  | UTM                |
+
+---
+
+## Common CRS for Türkiye
+
+### WGS84
+
+```text
+EPSG:4326
+```
+
+Uses latitude/longitude.
+
+---
+
+### UTM Zone 36N
+
+Projected coordinate system commonly used in Türkiye.
+
+Better for:
+
+* distance
+* area
+* measurement accuracy
+
+---
+
+# 13. Georeferencing
+
+Georeferencing means attaching real-world coordinates to data.
 
 Example:
 
@@ -328,193 +342,411 @@ Latitude: 41.2
 Longitude: 32.6
 ```
 
-Without coordinates:
-
-* map is useless.
+All GIS datasets require spatial reference information.
 
 ---
 
-# COORDINATE SYSTEMS (VERY IMPORTANT)
+# 14. Common GIS File Formats
 
-Two common systems:
+# Vector Formats
 
-| System     | Example |
-| ---------- | ------- |
-| Geographic | Lat/Lon |
-| Projected  | UTM     |
+| Format     | Use              |
+| ---------- | ---------------- |
+| `.shp`     | Shapefile        |
+| `.geojson` | Web GIS          |
+| `.kml`     | Google Earth     |
+| `.gdb`     | ESRI Geodatabase |
 
 ---
 
-# FOR YOUR PROJECT
+# Raster Formats
 
-Usually use:
+| Format       | Use              |
+| ------------ | ---------------- |
+| `.tif/.tiff` | GeoTIFF raster   |
+| `.img`       | Raster           |
+| `.jp2`       | Sentinel imagery |
+
+---
+
+# 15. CSV in GIS
+
+CSV files can store coordinates.
+
+Example:
+
+| ID | Latitude | Longitude |
+| -- | -------- | --------- |
+| 1  | 41.2     | 32.6      |
+
+GIS software can convert CSV to point layers.
+
+---
+
+# 16. Machine Learning in GIS
+
+GIS + ML combines:
+
+* spatial data
+* raster analysis
+* predictive modeling
+
+---
+
+# 17. Core ML Workflow in GIS
+
+## STEP 1 — Create Training Points
+
+Create shapefile:
 
 ```text
-WGS84 (EPSG:4326)
+samplepoints.shp
 ```
 
-or
+Example:
+
+| Point    | Label |
+| -------- | ----- |
+| Urban    | 1     |
+| NonUrban | 0     |
+
+---
+
+# STEP 2 — Prepare Raster Layers
+
+Examples:
+
+* NDVI raster
+* NDBI raster
+* DEM raster
+* Slope raster
+* Temperature raster
+
+These become ML features.
+
+---
+
+# STEP 3 — Extract Raster Values to Points
+
+Example result:
+
+| Point | NDVI | Elevation | NDBI | Label |
+| ----- | ---- | --------- | ---- | ----- |
+| P1    | 0.2  | 350       | 0.6  | 1     |
+| P2    | 0.8  | 500       | -0.3 | 0     |
+
+This table becomes the ML dataset.
+
+---
+
+# STEP 4 — Train ML Model
+
+Common algorithms:
+
+| Algorithm     | Use                    |
+| ------------- | ---------------------- |
+| Random Forest | Classification         |
+| XGBoost       | Advanced boosting      |
+| LightGBM      | Fast gradient boosting |
+| SVM           | Binary classification  |
+
+---
+
+# STEP 5 — Prediction
+
+Model predicts:
+
+* urban growth
+* wildfire susceptibility
+* flood risk
+* land cover
+
+Output:
+
+* probability map
+* classified raster
+
+---
+
+# STEP 6 — Visualization
+
+Visualize outputs in:
+
+* QGIS
+* ArcGIS
+* Web GIS
+
+---
+
+# 18. Raster vs Vector (Most Important Concept)
+
+## VECTOR = OBJECTS
+
+Examples:
+
+* roads
+* rivers
+* buildings
+* sample points
+
+Discrete features.
+
+---
+
+## RASTER = CONTINUOUS SURFACE
+
+Examples:
+
+* satellite image
+* temperature
+* NDVI
+* elevation
+
+Continuous data.
+
+This distinction is the core of GIS.
+
+---
+
+# 19. Wildfire Susceptibility Project Workflow
 
 ```text
-UTM Zone 36N
+Google Earth Engine
+        ↓
+Export CSV
+        ↓
+Python ML Processing
+        ↓
+Predict Probabilities
+        ↓
+Create Shapefile
+        ↓
+Rasterization
+        ↓
+Generate GeoTIFF
+        ↓
+Visualization in QGIS
 ```
 
-Türkiye often uses UTM.
+---
+
+# 20. Detailed Workflow
+
+## A. Data Collection
+
+Sources:
+
+* Sentinel-2 imagery
+* DEM
+* Weather data
+* Fire history
 
 ---
 
-# WHAT YOU REALLY NEED TO UNDERSTAND
+## B. Feature Preparation
 
-For your project, focus on these concepts only:
+Generate:
 
-| Must Know         | Why                |
-| ----------------- | ------------------ |
-| Point shapefile   | training labels    |
-| Raster layer      | features           |
-| Pixel values      | ML inputs          |
-| Attribute table   | labels/data        |
-| NDVI/NDBI         | important features |
-| Coordinate system | map alignment      |
-| Resolution        | detail level       |
-
-That is enough to successfully complete your project.
+* NDVI
+* NDBI
+* Slope
+* Elevation
+* Distance to roads
+* Temperature
 
 ---
 
-# SIMPLE PROJECT FLOW
+## C. Training Dataset
+
+Combine:
+
+* raster values
+* labeled points
+
+Final dataset:
+
+| NDVI | Elevation | Slope | Temp | Label |
+| ---- | --------- | ----- | ---- | ----- |
+| 0.3  | 500       | 20    | 35   | 1     |
+
+---
+
+## D. Model Training
+
+Train:
+
+* Random Forest
+* XGBoost
+* LightGBM
+
+---
+
+## E. Prediction
+
+Predict wildfire probability for every pixel.
+
+Output:
+
+* probability raster
+
+---
+
+## F. Rasterization
+
+Convert predictions into GeoTIFF.
+
+Example:
+
+* 100m resolution wildfire risk map
+
+---
+
+## G. Visualization
+
+Use QGIS:
+
+* style layers
+* create maps
+* analyze results
+
+---
+
+# 21. Important GIS Operations
+
+| Operation | Purpose                 |
+| --------- | ----------------------- |
+| Clip      | Cut data to AOI         |
+| Buffer    | Create distance zones   |
+| Intersect | Find overlapping areas  |
+| Rasterize | Convert vector → raster |
+| Vectorize | Convert raster → vector |
+| Reproject | Change CRS              |
+
+---
+
+# 22. Common GIS Software
+
+| Software            | Use                       |
+| ------------------- | ------------------------- |
+| QGIS                | Open-source GIS           |
+| ArcGIS              | ESRI GIS platform         |
+| Google Earth Engine | Cloud remote sensing      |
+| SNAP                | Sentinel image processing |
+
+---
+
+# 23. Python Libraries for GIS + ML
+
+| Library      | Purpose             |
+| ------------ | ------------------- |
+| GeoPandas    | Vector processing   |
+| Rasterio     | Raster processing   |
+| GDAL         | GIS data handling   |
+| Shapely      | Geometry operations |
+| scikit-learn | Machine Learning    |
+| XGBoost      | Boosting models     |
+| NumPy        | Numerical arrays    |
+| Pandas       | Tables/dataframes   |
+
+---
+
+# 24. Best Practices
+
+## A. Keep Shapefile Files Together
+
+Never separate:
+
+* `.shp`
+* `.shx`
+* `.dbf`
+* `.prj`
+
+---
+
+## B. Check CRS
+
+Always ensure layers use the same coordinate system.
+
+Misaligned CRS causes mapping errors.
+
+---
+
+## C. Use Open Formats
+
+Prefer:
+
+* GeoTIFF
+* GeoJSON
+
+for sharing projects.
+
+---
+
+## D. Organize Project Structure
+
+Example:
+
+```text
+Project/
+│
+├── data/
+├── raster/
+├── vector/
+├── output/
+├── scripts/
+└── maps/
+```
+
+---
+
+## E. Store Metadata
+
+Document:
+
+* data source
+* CRS
+* resolution
+* date
+
+---
+
+# 25. Final Core Understanding
+
+For your GIS + ML projects, the MOST important ideas are:
+
+| Concept           | Why Important       |
+| ----------------- | ------------------- |
+| Point shapefile   | Training labels     |
+| Raster layers     | ML features         |
+| Pixel values      | Model inputs        |
+| Attribute table   | Labels/data         |
+| NDVI/NDBI         | Important indices   |
+| Coordinate system | Alignment           |
+| Resolution        | Spatial detail      |
+| Raster vs Vector  | Core GIS foundation |
+
+---
+
+# 26. Final Simplified Pipeline
 
 ```text
 Satellite Image (Raster)
         ↓
-Create NDVI/NDBI Raster
+Generate NDVI/NDBI
         ↓
-Create Urban/NonUrban Points (Shapefile)
+Create Sample Points
         ↓
-Extract Raster Values to Points
+Extract Raster Values
         ↓
-Create ML Dataset
+Build ML Dataset
         ↓
-Train Random Forest
+Train Model
         ↓
-Predict Urban Growth Map
+Predict Probability Map
+        ↓
+Export GeoTIFF
         ↓
 Visualize in QGIS/Web GIS
 ```
 
----
-
-# VERY IMPORTANT UNDERSTANDING
-
-## VECTOR = OBJECTS
-
-Example:
-
-* road
-* building
-* point
-
-## RASTER = CONTINUOUS SURFACE
-
-Example:
-
-* temperature
-* vegetation
-* satellite image
-
-That distinction is the core of GIS.
-
----
-
-## 📂 Core GIS File Types
-- **Shapefile (.shp, .shx, .dbf)**  
-  - `.shp` → geometry (points, lines, polygons)  
-  - `.shx` → spatial index linking geometry to attributes  
-  - `.dbf` → attribute table (columns + rows of data)  
-  - These three are mandatory for a shapefile to work.
-
-- **Projection file (.prj)**  
-  - Stores coordinate system info (e.g., WGS84, UTM).  
-  - Without it, your data may not align correctly on maps.
-
----
-
-## 📂 Supporting Files
-- **.cpg** → character encoding for text in `.dbf`  
-- **.qpj** → alternative projection file (used by QGIS)  
-- **.sbn / .sbx** → spatial index files (speed up queries)  
-- **.xml** → metadata (dataset description)
-
----
-
-## 🗂 Other Common GIS Formats
-- **GeoTIFF (.tif)** → raster data (elevation, NDVI, probability maps).  
-- **KML/KMZ** → Google Earth vector format.  
-- **GeoJSON (.geojson)** → web‑friendly vector format.  
-- **File Geodatabase (.gdb)** → ESRI’s database format for large projects.  
-- **CSV with coordinates** → tabular data that can be converted into points.
-
----
-
-## 🧩 Best Practices for GIS Projects
-1. **Keep shapefile bundles together** → always move `.shp`, `.shx`, `.dbf`, `.prj` together.  
-2. **Check CRS** → projection files (`.prj`) ensure correct alignment.  
-3. **Document metadata** → use `.xml` or a README to explain your dataset.  
-4. **Raster vs Vector** → know when to use rasters (continuous data like NDVI) vs vectors (discrete features like rivers).  
-5. **Version control** → store datasets in GitHub or cloud storage with clear naming.  
-6. **Interoperability** → prefer open formats (GeoJSON, GeoTIFF) if sharing outside ArcGIS/QGIS.
-
----
-
-👉 For your wildfire susceptibility project, you’ll mainly handle:
-- **Shapefiles** (points with probability values, rivers, AOI boundaries).  
-- **GeoTIFFs** (rasterized probability maps, DEM, NDVI layers).  
-
-Here’s a clean **workflow diagram** idea for your wildfire susceptibility project. It shows how the different file types interact from start to finish:
-
----
-
-## 🔄 GIS Project Workflow
-
-```text
-CSV (Exported from Google Earth Engine)
-   │
-   ▼
-Python (ML Model Prediction)
-   - Clean dataset (drop metadata)
-   - Align features with training set
-   - Predict probabilities
-   │
-   ▼
-Shapefile (.shp + .shx + .dbf + .prj)
-   - Geometry: AOI points
-   - Attributes: Probability values
-   │
-   ▼
-Rasterization (GeoTIFF .tif)
-   - Convert point probabilities → continuous raster surface
-   - Resolution: 100 m
-   │
-   ▼
-Visualization (QGIS / ArcMap)
-   - Load shapefile (vector) for inspection
-   - Load GeoTIFF (raster) for probability map
-   - Symbolize burned/unburned points, probability gradients
-```
-
----
-
-## 📂 File Roles in the Workflow
-- **CSV** → raw tabular data exported from Earth Engine.  
-- **Shapefile bundle** (`.shp`, `.shx`, `.dbf`, `.prj`) → vector dataset with geometry + attributes.  
-- **GeoTIFF (.tif)** → raster dataset for probability surface.  
-- **QGIS/ArcMap project** → visualization, styling, and final maps.
-
----
-
-This diagram makes it clear:  
-- **CSV** is your input.  
-- **Shapefile** is your intermediate vector output.  
-- **GeoTIFF** is your raster output.  
-- **QGIS/ArcMap** is your visualization environment.  
-
----
+This is the complete foundation of a modern GIS + Machine Learning workflow.
